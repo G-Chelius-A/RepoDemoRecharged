@@ -35,6 +35,6 @@ const styles = StyleSheet.create({
         textShadowColor: 'rgb(255, 52, 52)',
         textShadowOffset: { width: 0, height: 3.5 },
         textShadowRadius: 5,
-
+        //backgroundColor: 'yellow',
     },
 });
