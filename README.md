@@ -11,6 +11,7 @@ Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 | 3 | Ejercicio_03 | Uso de imágenes | 20/ago/26 |
 | 4 | Ejemplo_04 | Uso de Modales | 25/ago/26 |
 | 5 | FitCalc | Calculadora IMC | 27/ago/26 | 
+| 6 | DynamicFlatlist | Lista dinámica con touch | 27/ago/26 |
 
 ## Resumen actividades Ordinario
 
