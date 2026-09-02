@@ -12,6 +12,8 @@ Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 | 4 | Ejemplo_04 | Uso de Modales | 25/ago/26 |
 | 5 | FitCalc | Calculadora IMC | 27/ago/26 | 
 | 6 | DynamicFlatlist | Lista dinámica con touch | 27/ago/26 |
+| 7 | StackNavigation | Pila de navegación | 01/sep/26 | 
+| 8 | TabNavigation | "Barra" de navegación | 01/sep/26 |
 
 ## Resumen actividades Ordinario
 
