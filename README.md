@@ -1,4 +1,4 @@
-# RepoDemoRecharged
+![MiRepoDemoRecharges](ReadMeImages/SplashScreen.png)
 Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 
 ## Resumen actividades Parcial
