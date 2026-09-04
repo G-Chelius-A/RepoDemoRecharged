@@ -14,6 +14,7 @@ Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 | 6 | DynamicFlatlist | Lista dinámica con touch | 27/ago/26 |
 | 7 | StackNavigation | Pila de navegación | 01/sep/26 | 
 | 8 | TabNavigation | "Barra" de navegación | 01/sep/26 |
+| 9 | DrawerNavigation | DrawerNavigation + SplashScreens | 03/sep/26 |
 
 ## Resumen actividades Ordinario
 
