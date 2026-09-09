@@ -82,8 +82,6 @@ useEffect(() => {
     ]).start();
   }, []);
 
-
-
   return(
     <View style={{
       flex: 1,
