@@ -15,6 +15,8 @@ Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 | 7 | StackNavigation | Pila de navegación | 01/sep/26 | 
 | 8 | TabNavigation | "Barra" de navegación | 01/sep/26 |
 | 9 | DrawerNavigation | DrawerNavigation + SplashScreens | 03/sep/26 |
+| 10 | Animated | Estilos de animación | 08/sep/26 |
+| 11 | VidaStation | Aplicación con IA | 08/sep/26 |
 
 ## Resumen actividades Ordinario
 
