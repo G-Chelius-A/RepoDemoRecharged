@@ -1,0 +1,2 @@
+# Instala
+npx expo install react-dom react-native-web
