@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "all": "^0.0.0",
+    "eas": "^0.1.0",
     "expo": "~57.0.23",
     "expo-location": "~57.0.18",
     "expo-sensors": "~57.0.3",

@@ -18,10 +18,16 @@
       },
       "permissions": [
         "android.permission.ACTIVITY_RECOGNITION"
-      ]
+      ],
+      "package": "com.cheliusucc26.Sensores"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8afa2d8e-74a1-4cf7-8a24-70be211b1c0e"
+      }
     }
   }
 }
