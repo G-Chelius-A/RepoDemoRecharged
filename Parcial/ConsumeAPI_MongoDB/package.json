@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "@ngrok/ngrok": "^1.7.0",
     "cors": "^2.8.6",
     "expo": "~57.0.23",
     "expo-status-bar": "~57.0.1",
@@ -13,6 +14,7 @@
   },
   "scripts": {
     "start": "expo start",
+    "start:movies": "node API/server_mongo.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web"
