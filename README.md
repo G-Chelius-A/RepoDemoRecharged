@@ -18,8 +18,8 @@ Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 | 10 | Animated | Estilos de animación | 08/sep/26 |
 | 11 | VidaStation | Aplicación con IA | 08/sep/26 |
 | 12 | Sensores | Aplicaciones con sensores | 15/sep/26 |
-| 13 | Mapas | Intento de observar mapas | 18/sep/26 |
-| 14 | ConsumeAPI_MongoDB | Consumir API con Mongo DB | 18/sep/26 | 
+| 13 | Mapas | Intento de observar mapas | 17/sep/26 |
+| 14 | ConsumeAPI_MongoDB | Consumir API con Mongo DB | 17/sep/26 | 
 
 ## Resumen actividades Ordinario
 
