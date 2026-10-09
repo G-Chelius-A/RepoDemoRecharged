@@ -22,7 +22,7 @@ Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 | 14 | ConsumeAPI_MongoDB | Consumir API con Mongo DB | 17/sep/26 | 
 | P | Conatus | Proyecto parcial | 06/oct/26 |
 
-TOTAL: 16 (14 actividades + 1 intro + 1 proyecto)
+### 👉 TOTAL: 16 (14 actividades + 1 intro + 1 proyecto)
 
 ## Resumen actividades Ordinario
 
@@ -31,3 +31,5 @@ TOTAL: 16 (14 actividades + 1 intro + 1 proyecto)
 | 1 | FaceRecognition | Reconocimiento facial | 01/oct/26 |
 | 2 | MyFirstAndroidApp | Primera App Android Studio | 08/oct/26 |
 | 3 | MySumApp | App de sumas Android Studio | 08/oct/26 |
+
+### 👉 TOTAL: 3 (3 actividades)
