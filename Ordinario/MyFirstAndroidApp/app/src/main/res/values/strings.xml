@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MyFirstAndroidApp</string>
+    <string name="txt_boton">Click me now!</string>
+</resources>

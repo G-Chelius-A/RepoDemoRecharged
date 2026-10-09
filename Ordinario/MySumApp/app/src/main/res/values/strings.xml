@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MySumApp</string>
+    <string name="suma">SUMA</string>
+    <string name="calculadora_de_sumas">CALCULADORA DE SUMAS</string>
+    <string name="n_mero_1">Número 1</string>
+    <string name="n_mero_2">Número 2</string>
+    <string name="resultado">RESULTADO</string>
+</resources>
