@@ -31,5 +31,6 @@ Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 | 1 | FaceRecognition | Reconocimiento facial | 01/oct/26 |
 | 2 | MyFirstAndroidApp | Primera App Android Studio | 08/oct/26 |
 | 3 | MySumApp | App de sumas Android Studio | 08/oct/26 |
+| 4 | DemoIntent | Uso de intents y extras Android Studio | 13/oct/26 |
 
 ### 👉 TOTAL: 3 (3 actividades)

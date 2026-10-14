@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">DemoIntent</string>
+    <string name="calculadora_de_sumas">Calculadora de sumas</string>
+    <string name="numero_1">Numero 1</string>
+    <string name="numero_2">Numero 2</string>
+    <string name="suma">Suma</string>
+    <string name="resultado">Resultado</string>
+    <string name="multiplica">Multiplica</string>
+    <string name="calculadora_de_multiplicaciones">Calculadora de multiplicaciones</string>
+    <string name="calculadora_al_cuadrado">Calculadora al cuadrado</string>
+</resources>
