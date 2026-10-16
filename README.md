@@ -33,6 +33,7 @@ Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 | 3 | MySumApp | App de sumas Android Studio | 08/oct/26 |
 | 4 | DemoIntent | Uso de intents y extras Android Studio | 13/oct/26 |
 | 5 | Fragmentado | Uso de botones y fragmentos Android Studio | 15/oct/26 |
+| 6 | VertHorizon | VertHorizon | 15/oct/26 |
 
 
 ### 👉 TOTAL: 5 (1 actividad React Native, 4 Android Studio)
