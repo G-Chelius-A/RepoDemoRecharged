@@ -34,6 +34,8 @@ Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 | 4 | DemoIntent | Uso de intents y extras Android Studio | 13/oct/26 |
 | 5 | Fragmentado | Uso de botones y fragmentos Android Studio | 15/oct/26 |
 | 6 | VertHorizon | VertHorizon | 15/oct/26 |
+| 7 | Layouts | Tipos de layouts | 20/oct/26 |
+| 8 | Listas | Tipos de listas | 20/oct/26 |
 
 
-### 👉 TOTAL: 5 (1 actividad React Native, 4 Android Studio)
+### 👉 TOTAL: 8 (1 actividad React Native, 7 Android Studio)

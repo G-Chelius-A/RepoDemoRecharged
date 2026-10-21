@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="354dp"
+        android:background="#FFEB3B"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="60dp"
+            android:layout_height="49dp"
+            android:text="Linear Layout" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#8195FA"
+            android:text="Hola a todos"
+            tools:layout_editor_absoluteX="60dp" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="163dp"
+            android:layout_height="71dp"
+            android:layout_weight="1"
+            android:background="#03A9F4"
+            android:text="Yo soy un texto de tipo horizontal."
+            tools:layout_editor_absoluteX="139dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="409dp"
+        android:layout_height="374dp"
+        android:background="#8BC34A"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Yo soy un Linear Layout" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="De Tipo Vertical"
+            tools:layout_editor_absoluteY="19dp" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Y no estoy hecho en IA"
+            tools:layout_editor_absoluteY="39dp" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Regresar"
+            tools:layout_editor_absoluteY="58dp" />
+    </LinearLayout>
+
+</LinearLayout>
