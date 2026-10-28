@@ -36,6 +36,8 @@ Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 | 6 | VertHorizon | VertHorizon | 15/oct/26 |
 | 7 | Layouts | Tipos de layouts | 20/oct/26 |
 | 8 | Listas | Tipos de listas | 20/oct/26 |
+| 9 | Persistencia | Persistencia con SupaBase | 27/oct/26 |
+| 10 | PersistenciaAndroid | Persistencia SupaBase Android Studio | 27/oct/26 |
 
 
 ### 👉 TOTAL: 8 (1 actividad React Native, 7 Android Studio)
