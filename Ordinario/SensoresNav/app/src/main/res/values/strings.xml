@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sensores &amp; Nav</string>
+    <string name="welcome_title">Sensores del Dispositivo</string>
+    <string name="welcome_subtitle">Selecciona un sensor o función desde el menú lateral o las tarjetas a continuación.</string>
+
+    <!-- Drawer Menu Items -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_accelerometer">Acelerómetro</string>
+    <string name="nav_pedometer">Podómetro</string>
+    <string name="nav_gyroscope">Giroscopio</string>
+    <string name="nav_camera">Cámara</string>
+    <string name="nav_gps">GPS y Ubicación</string>
+    <string name="nav_magnetometer">Magnetómetro / Brújula</string>
+    <string name="navigation_drawer_open">Abrir menú de navegación</string>
+    <string name="navigation_drawer_close">Cerrar menú de navegación</string>
+
+    <!-- Drawer Header -->
+    <string name="drawer_header_title">Demostrador de Sensores</string>
+    <string name="drawer_header_subtitle">SensoresNav - Android Java</string>
+
+    <!-- Accelerometer Activity -->
+    <string name="title_accelerometer">Acelerómetro</string>
+    <string name="desc_accelerometer">Mide la aceleración lineal del dispositivo en los ejes X, Y y Z.</string>
+    <string name="axis_x">Eje X:</string>
+    <string name="axis_y">Eje Y:</string>
+    <string name="axis_z">Eje Z:</string>
+    <string name="shake_detected">¡Agitación Detectada!</string>
+    <string name="shake_none">Dispositivo Estable</string>
+
+    <!-- Pedometer Activity -->
+    <string name="title_pedometer">Podómetro</string>
+    <string name="desc_pedometer">Cuenta los pasos detectados utilizando el sensor de conteo de pasos.</string>
+    <string name="steps_label">Pasos Contados</string>
+    <string name="steps_session">Pasos en esta sesión:</string>
+    <string name="reset_steps">Reiniciar Contador de Sesión</string>
+    <string name="step_detected_event">Último evento de paso detectado</string>
+
+    <!-- Gyroscope Activity -->
+    <string name="title_gyroscope">Giroscopio</string>
+    <string name="desc_gyroscope">Mide la velocidad angular de rotación en los ejes X (Pitch), Y (Roll) y Z (Yaw).</string>
+    <string name="rotation_pitch">Pitch (X):</string>
+    <string name="rotation_roll">Roll (Y):</string>
+    <string name="rotation_yaw">Yaw (Z):</string>
+
+    <!-- Camera Activity -->
+    <string name="title_camera">Cámara</string>
+    <string name="desc_camera">Captura una fotografía utilizando la cámara del dispositivo.</string>
+    <string name="take_photo">Tomar Fotografía</string>
+    <string name="photo_preview">Vista Previa de la Foto</string>
+
+    <!-- GPS Activity -->
+    <string name="title_gps">GPS / Ubicación</string>
+    <string name="desc_gps">Obtiene las coordenadas geográficas, altitud, velocidad y precisión del dispositivo.</string>
+    <string name="latitude">Latitud:</string>
+    <string name="longitude">Longitud:</string>
+    <string name="altitude">Altitud:</string>
+    <string name="speed">Velocidad:</string>
+    <string name="accuracy">Precisión:</string>
+    <string name="provider">Proveedor:</string>
+    <string name="btn_start_gps">Iniciar Seguimiento GPS</string>
+    <string name="btn_stop_gps">Detener GPS</string>
+    <string name="gps_searching">Obteniendo ubicación...</string>
+    <string name="gps_stopped">GPS Inactivo</string>
+
+    <!-- Magnetometer Activity -->
+    <string name="title_magnetometer">Magnetómetro / Brújula</string>
+    <string name="desc_magnetometer">Mide el campo magnético terrestre y calcula la orientación del norte magnético.</string>
+    <string name="magnetic_field_total">Intensidad Campo:</string>
+    <string name="compass_azimuth">Azimut / Orientación:</string>
+    <string name="direction_north">Norte</string>
+    <string name="direction_east">Este</string>
+    <string name="direction_south">Sur</string>
+    <string name="direction_west">Oeste</string>
+
+    <!-- Status & Warnings -->
+    <string name="sensor_not_available">Este sensor no está disponible en este dispositivo.</string>
+    <string name="permission_required">Se requiere permiso para acceder a esta función.</string>
+    <string name="grant_permission">Conceder Permiso</string>
+</resources>

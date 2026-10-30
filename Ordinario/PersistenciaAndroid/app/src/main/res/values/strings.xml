@@ -1,3 +1,35 @@
 <resources>
-    <string name="app_name">PersistenciaAndroid</string>
+    <string name="app_name">Productos Supabase</string>
+    <string name="productos">Productos</string>
+    <string name="producto">Producto</string>
+    <string name="descripcion">Descripción</string>
+    <string name="precio">Precio</string>
+    <string name="agregar_producto">Agregar producto</string>
+    <string name="limpiar">Limpiar</string>
+    <string name="conectando_supabase">Conectando con Supabase...</string>
+    <string name="registros_editar">Registros (toca uno para editar)</string>
+    <string name="error_campos_requeridos">Completa producto, descripción y precio.</string>
+    <string name="error_precio">Ingresa un precio numérico válido.</string>
+    <string name="guardando">Guardando producto...</string>
+    <string name="guardado">Producto guardado.</string>
+    <string name="cargando">Cargando productos...</string>
+    <string name="registros_cargados">Registros cargados: %1$d</string>
+    <string name="guardar_cambios">Guardar cambios</string>
+    <string name="editando">Editando producto.</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="eliminando">Eliminando producto...</string>
+    <string name="eliminado">Producto eliminado.</string>
+    <string name="error_supabase">Error de Supabase: %1$s</string>
+    <string name="menu_descripcion">Selecciona una acción del CRUD:</string>
+    <string name="menu_create">Crear Producto (INSERT)</string>
+    <string name="menu_read">Consultar Productos (SELECT)</string>
+    <string name="menu_update">Actualizar Producto (UPDATE)</string>
+    <string name="menu_delete">Eliminar Producto (DELETE)</string>
+    <string name="titulo_crear">Crear Nuevo Producto</string>
+    <string name="titulo_leer">Lista de Productos</string>
+    <string name="titulo_actualizar">Actualizar Producto</string>
+    <string name="titulo_eliminar">Eliminar Producto</string>
+    <string name="selecciona_editar">Toca un producto abajo para editarlo</string>
+    <string name="selecciona_eliminar">Toca eliminar en el producto deseado</string>
+    <string name="editar">Editar</string>
 </resources>

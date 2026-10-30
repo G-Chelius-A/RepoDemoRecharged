@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="@string/nav_home" />
+        <item
+            android:id="@+id/nav_accelerometer"
+            android:icon="@drawable/ic_accelerometer"
+            android:title="@string/nav_accelerometer" />
+        <item
+            android:id="@+id/nav_pedometer"
+            android:icon="@drawable/ic_pedometer"
+            android:title="@string/nav_pedometer" />
+        <item
+            android:id="@+id/nav_gyroscope"
+            android:icon="@drawable/ic_gyroscope"
+            android:title="@string/nav_gyroscope" />
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_camera"
+            android:title="@string/nav_camera" />
+        <item
+            android:id="@+id/nav_gps"
+            android:icon="@drawable/ic_gps"
+            android:title="@string/nav_gps" />
+        <item
+            android:id="@+id/nav_magnetometer"
+            android:icon="@drawable/ic_magnetometer"
+            android:title="@string/nav_magnetometer" />
+    </group>
+</menu>

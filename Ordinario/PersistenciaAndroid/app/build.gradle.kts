@@ -10,8 +10,8 @@ if (localPropertiesFile.exists()) {
     localProperties.load(localPropertiesFile.inputStream())
 }
 
-val supabaseUrl = localProperties.getProperty("SUPABASE_URL", "https://tu-proyecto.supabase.co")
-val supabaseAnonKey = localProperties.getProperty("SUPABASE_ANON_KEY", "tu_clave_anonima")
+val supabaseUrl = localProperties.getProperty("SUPABASE_URL", "https://whvorrzlzqpymbzlltiw.supabase.co")
+val supabaseAnonKey = localProperties.getProperty("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indodm9ycnpsenFweW1iemxsdGl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NDk0MDEsImV4cCI6MjA4OTEyNTQwMX0.nQfd_fC9l2V8iceMQ45WgpjC-zyMnoHucJogOTPfOMw")
 
 android {
     namespace = "com.example.persistenciaandroid"
@@ -59,8 +59,5 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(platform("io.github.jan-tennert.supabase:bom:${libs.versions.supabaseBom.get()}"))
-    implementation("io.github.jan-tennert.supabase:postgrest-kt")
-    implementation("io.github.jan-tennert.supabase:realtime-kt")
-    implementation("io.ktor:ktor-client-android:${libs.versions.ktorAndroid.get()}")
+    implementation(libs.okhttp)
 }
