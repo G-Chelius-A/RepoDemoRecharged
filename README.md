@@ -39,6 +39,7 @@ Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 | 9 | Persistencia | Persistencia con SupaBase | 27/oct/26 |
 | 10 | PersistenciaAndroid | Persistencia SupaBase Android Studio | 27/oct/26 |
 | 11 | SensoresNav | Uso de sensores en Android Studio | 29/oct/26 | 
+| 12 | CloneWhatsApp | Clon de WhatsApp con Supabase y JWT | TBA |
 
 
-### 👉 TOTAL: 11 (2 actividad React Native, 9 Android Studio)
+### 👉 TOTAL: 12 (2 actividad React Native, 10 Android Studio)
