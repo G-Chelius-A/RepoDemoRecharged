@@ -56,9 +56,10 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.material)
 
-    // Dependencias para consumir Supabase REST API en Java
+    // Dependencias para consumir Supabase REST API y multimedia en Java
     implementation(libs.okhttp)
     implementation(libs.gson)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
