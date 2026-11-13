@@ -4,23 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorSurface">
+    android:background="@color/whatsapp_chat_bg">
 
-    <!-- Encabezado del Chat -->
+    <!-- Encabezado del Chat Estilo WhatsApp -->
     <LinearLayout
+        android:id="@+id/layoutHeaderNormal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:padding="12dp"
         android:elevation="4dp"
-        android:background="?attr/colorSurfaceContainer">
+        android:background="@color/whatsapp_teal_dark">
 
         <ImageButton
             android:id="@+id/btnBack"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@android:drawable/ic_menu_revert"
+            android:src="@drawable/ic_back_24"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="8dp"
             android:layout_marginEnd="8dp"
@@ -28,10 +29,10 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivRecipientAvatar"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher_round"
+            android:src="@drawable/ic_default_avatar"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
             android:layout_marginEnd="12dp" />
 
@@ -48,7 +49,7 @@
                 android:text="Contacto"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface" />
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/tvRecipientSubtext"
@@ -56,9 +57,51 @@
                 android:layout_height="wrap_content"
                 android:text="En línea"
                 android:textSize="12sp"
-                android:textColor="?attr/colorPrimary" />
+                android:textColor="@color/whatsapp_green_accent" />
 
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/ibSearch"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_search_24"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:contentDescription="Buscar mensajes" />
+
+    </LinearLayout>
+
+    <!-- Barra de Búsqueda de Mensajes -->
+    <LinearLayout
+        android:id="@+id/layoutSearchBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:visibility="gone"
+        android:background="@color/whatsapp_teal_dark">
+
+        <EditText
+            android:id="@+id/etSearchMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Buscar en el chat..."
+            android:inputType="text"
+            android:padding="10dp"
+            android:background="@android:drawable/editbox_background"
+            android:layout_marginEnd="8dp" />
+
+        <ImageButton
+            android:id="@+id/ibCloseSearch"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_close_24"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:contentDescription="Cerrar búsqueda" />
 
     </LinearLayout>
 
@@ -81,35 +124,75 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp" />
 
-    <!-- Barra de Envío -->
+    <!-- Barra de Envío Flotante Cápsula WhatsApp -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="8dp"
-        android:background="?attr/colorSurfaceContainer">
+        android:padding="6dp">
 
-        <EditText
-            android:id="@+id/etMessage"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Escribe un mensaje..."
-            android:inputType="textMultiLine|textCapSentences"
-            android:maxLines="4"
-            android:padding="12dp"
-            android:background="@android:drawable/editbox_background"
-            android:layout_marginEnd="8dp" />
+            app:cardCornerRadius="24dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/white"
+            android:layout_marginEnd="6dp">
 
-        <ImageButton
-            android:id="@+id/btnSend"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp">
+
+                <ImageButton
+                    android:id="@+id/ibAttach"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_camera_24"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="6dp"
+                    android:contentDescription="Adjuntar foto" />
+
+                <EditText
+                    android:id="@+id/etMessage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Escribe un mensaje"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:maxLines="4"
+                    android:padding="10dp"
+                    android:background="@null" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Botón Enviar Circular Verde WhatsApp -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_send"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="10dp"
-            android:contentDescription="Enviar" />
+            app:cardCornerRadius="24dp"
+            app:cardElevation="3dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="@color/whatsapp_teal_light">
+
+            <ImageButton
+                android:id="@+id/btnSend"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_send_24"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="12dp"
+                android:contentDescription="Enviar" />
+
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 

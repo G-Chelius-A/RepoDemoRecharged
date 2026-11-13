@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Paleta Oficial de WhatsApp -->
+    <color name="whatsapp_teal_dark">#075E54</color>
+    <color name="whatsapp_teal_light">#128C7E</color>
+    <color name="whatsapp_green_accent">#25D366</color>
+    <color name="whatsapp_blue_accent">#34B7F1</color>
+    <color name="whatsapp_chat_bg">#E5DDD5</color>
+    <color name="whatsapp_bubble_sent">#E7FFDB</color>
+    <color name="whatsapp_bubble_received">#FFFFFF</color>
+    <color name="whatsapp_gray_text">#667781</color>
+    <color name="whatsapp_surface_light">#F0F2F5</color>
 </resources>

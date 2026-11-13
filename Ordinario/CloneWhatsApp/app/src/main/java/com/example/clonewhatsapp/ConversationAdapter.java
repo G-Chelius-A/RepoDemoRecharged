@@ -48,7 +48,24 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     public void onBindViewHolder(@NonNull ConversationViewHolder holder, int position) {
         Conversation conversation = conversationList.get(position);
 
-        holder.tvName.setText(conversation.getDisplayName());
+        if (conversation.isGroup()) {
+            holder.tvName.setText(conversation.getConvoName() != null ? conversation.getConvoName() : "Grupo");
+            holder.ivAvatar.setImageResource(R.drawable.ic_group_24);
+        } else {
+            holder.tvName.setText(conversation.getDisplayName());
+            User otherUser = conversation.getOtherUser();
+            if (otherUser != null && otherUser.getImgUrl() != null && !otherUser.getImgUrl().trim().isEmpty()) {
+                Glide.with(context)
+                        .load(otherUser.getImgUrl())
+                        .placeholder(R.drawable.ic_default_avatar)
+                        .error(R.drawable.ic_default_avatar)
+                        .circleCrop()
+                        .into(holder.ivAvatar);
+            } else {
+                holder.ivAvatar.setImageResource(R.drawable.ic_default_avatar);
+            }
+        }
+
         holder.tvLastMessage.setText(conversation.getLastMessage());
 
         String rawTime = conversation.getLastMessageTime();
@@ -66,18 +83,6 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             }
         } else {
             holder.tvTime.setText(rawTime != null ? rawTime : "");
-        }
-
-        User otherUser = conversation.getOtherUser();
-        if (otherUser != null && otherUser.getImgUrl() != null && !otherUser.getImgUrl().trim().isEmpty()) {
-            Glide.with(context)
-                    .load(otherUser.getImgUrl())
-                    .placeholder(R.mipmap.ic_launcher_round)
-                    .error(R.mipmap.ic_launcher_round)
-                    .circleCrop()
-                    .into(holder.ivAvatar);
-        } else {
-            holder.ivAvatar.setImageResource(R.mipmap.ic_launcher_round);
         }
 
         holder.itemView.setOnClickListener(v -> {

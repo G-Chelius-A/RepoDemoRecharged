@@ -4,25 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorSurface"
-    android:padding="16dp">
+    android:background="@color/whatsapp_surface_light">
 
-    <!-- Header Perfil Usuario -->
+    <!-- Header Verde Superior Estilo WhatsApp -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
+        android:padding="16dp"
+        android:background="@color/whatsapp_teal_dark"
+        android:elevation="4dp">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivUserAvatar"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher_round"
+            android:src="@drawable/ic_default_avatar"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
-            app:strokeColor="?attr/colorPrimary"
+            app:strokeColor="@color/whatsapp_green_accent"
             app:strokeWidth="2dp"
             android:layout_marginEnd="12dp" />
 
@@ -36,18 +37,18 @@
                 android:id="@+id/tvWelcomeUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cargando perfil..."
-                android:textSize="18sp"
+                android:text="CloneWhatsApp"
+                android:textSize="20sp"
                 android:textStyle="bold"
-                android:textColor="?attr/colorPrimary" />
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/tvUserSubtext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sesión activa"
+                android:text="En línea"
                 android:textSize="12sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textColor="@color/whatsapp_green_accent" />
 
         </LinearLayout>
 
@@ -56,19 +57,48 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Perfil"
-            style="@style/Widget.Material3.Button.OutlinedButton" />
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:textColor="@color/white"
+            app:strokeColor="@color/white" />
 
     </LinearLayout>
 
-    <!-- Botón para ver contactos -->
-    <Button
-        android:id="@+id/btnOpenContacts"
+    <!-- Botones de Acción Estilizados -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="NUEVO CHAT / BUSCAR CONTACTOS"
-        android:padding="12dp"
-        style="@style/Widget.Material3.Button.TonalButton"
-        android:layout_marginBottom="16dp" />
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <Button
+            android:id="@+id/btnOpenContacts"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="NUEVO CHAT"
+            android:textStyle="bold"
+            app:icon="@drawable/ic_send_24"
+            app:iconTint="@color/white"
+            android:backgroundTint="@color/whatsapp_teal_light"
+            android:textColor="@color/white"
+            android:padding="12dp"
+            android:layout_marginEnd="6dp" />
+
+        <Button
+            android:id="@+id/btnCreateGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="CREAR GRUPO"
+            android:textStyle="bold"
+            app:icon="@drawable/ic_group_24"
+            app:iconTint="@color/white"
+            android:backgroundTint="@color/whatsapp_teal_light"
+            android:textColor="@color/white"
+            android:padding="12dp"
+            android:layout_marginStart="6dp" />
+
+    </LinearLayout>
 
     <!-- Card de Destinatario Seleccionado -->
     <com.google.android.material.card.MaterialCardView
@@ -78,7 +108,9 @@
         app:cardCornerRadius="12dp"
         app:cardElevation="2dp"
         android:visibility="gone"
-        android:layout_marginBottom="16dp">
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -92,7 +124,7 @@
                 android:text="Destinatario Seleccionado"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="@color/whatsapp_teal_light"
                 android:layout_marginBottom="8dp" />
 
             <LinearLayout
@@ -106,7 +138,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:scaleType="centerCrop"
-                    android:src="@mipmap/ic_launcher_round"
+                    android:src="@drawable/ic_default_avatar"
                     app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
                     android:layout_marginEnd="12dp" />
 
@@ -131,7 +163,7 @@
                         android:layout_height="wrap_content"
                         android:text="ID: ..."
                         android:textSize="11sp"
-                        android:textColor="?attr/colorOnSurfaceVariant" />
+                        android:textColor="@color/whatsapp_gray_text" />
 
                 </LinearLayout>
 
@@ -145,10 +177,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Conversaciones"
-        android:textSize="18sp"
+        android:text="CHATS RECIENTES"
+        android:textSize="13sp"
         android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="@color/whatsapp_gray_text"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
         android:layout_marginBottom="8dp" />
 
     <ProgressBar
@@ -164,13 +198,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="No tienes conversaciones activas.\n¡Haz clic en 'Nuevo Chat' para comenzar!"
+        android:text="No tienes chats activos.\n¡Presiona 'NUEVO CHAT' para comenzar!"
         android:textSize="14sp"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textColor="@color/whatsapp_gray_text"
         android:gravity="center"
         android:visibility="gone"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="24dp" />
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="32dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvConversations"
@@ -178,14 +212,18 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:scrollbars="vertical"
-        android:layout_marginBottom="8dp" />
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp" />
 
     <Button
         android:id="@+id/btnSignOut"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cerrar Sesión"
+        android:text="CERRAR SESIÓN"
         style="@style/Widget.Material3.Button.OutlinedButton"
+        android:textColor="@color/whatsapp_teal_light"
+        app:strokeColor="@color/whatsapp_teal_light"
+        android:layout_margin="12dp"
         android:padding="10dp" />
 
 </LinearLayout>

@@ -3,29 +3,45 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorSurface"
-    android:padding="16dp">
+    android:background="@color/whatsapp_surface_light">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Seleccionar Contacto"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorPrimary"
-        android:layout_marginBottom="16dp" />
-
-    <EditText
-        android:id="@+id/etSearch"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Buscar por nombre o usuario..."
-        android:inputType="text"
-        android:drawableStart="@android:drawable/ic_menu_search"
-        android:drawablePadding="10dp"
-        android:padding="12dp"
-        android:background="@android:drawable/editbox_background"
-        android:layout_marginBottom="16dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:background="@color/whatsapp_teal_dark"
+        android:elevation="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Seleccionar Contacto"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Buscar por nombre o usuario..."
+            android:inputType="text"
+            android:drawableStart="@drawable/ic_search_24"
+            android:drawableTint="@color/whatsapp_gray_text"
+            android:drawablePadding="10dp"
+            android:padding="12dp"
+            android:background="@android:drawable/editbox_background" />
+
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -33,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        android:layout_marginBottom="16dp" />
+        android:layout_margin="16dp" />
 
     <TextView
         android:id="@+id/tvEmptyState"
@@ -42,7 +58,7 @@
         android:layout_gravity="center"
         android:text="No se encontraron contactos"
         android:textSize="16sp"
-        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textColor="@color/whatsapp_gray_text"
         android:visibility="gone"
         android:layout_marginTop="32dp" />
 
@@ -51,6 +67,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp" />
 
 </LinearLayout>

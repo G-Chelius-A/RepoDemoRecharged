@@ -4,10 +4,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,28 +22,62 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     private final Context context;
     private final String currentUserId;
-    private final List<Message> messageList;
+    private final List<Message> originalList;
+    private final List<Message> filteredList;
+    private final OnMessageLongClickListener longClickListener;
+    private final OnImageClickListener imageClickListener;
 
-    public MessageAdapter(Context context, String currentUserId, List<Message> messages) {
+    public interface OnMessageLongClickListener {
+        void onMessageLongClick(Message message);
+    }
+
+    public interface OnImageClickListener {
+        void onImageClick(String imageUrl);
+    }
+
+    public MessageAdapter(Context context, String currentUserId, List<Message> messages, OnMessageLongClickListener longClickListener, OnImageClickListener imageClickListener) {
         this.context = context;
         this.currentUserId = currentUserId;
-        this.messageList = new ArrayList<>(messages);
+        this.originalList = new ArrayList<>(messages);
+        this.filteredList = new ArrayList<>(messages);
+        this.longClickListener = longClickListener;
+        this.imageClickListener = imageClickListener;
+    }
+
+    public MessageAdapter(Context context, String currentUserId, List<Message> messages, OnMessageLongClickListener longClickListener) {
+        this(context, currentUserId, messages, longClickListener, null);
+    }
+
+    public MessageAdapter(Context context, String currentUserId, List<Message> messages) {
+        this(context, currentUserId, messages, null, null);
     }
 
     public void updateMessages(List<Message> newMessages) {
-        this.messageList.clear();
-        this.messageList.addAll(newMessages);
+        this.originalList.clear();
+        this.originalList.addAll(newMessages);
+        this.filteredList.clear();
+        this.filteredList.addAll(newMessages);
         notifyDataSetChanged();
     }
 
-    public void addMessage(Message message) {
-        this.messageList.add(message);
-        notifyItemInserted(messageList.size() - 1);
+    public void filter(String query) {
+        filteredList.clear();
+        if (query == null || query.trim().isEmpty()) {
+            filteredList.addAll(originalList);
+        } else {
+            String filterPattern = query.toLowerCase().trim();
+            for (Message message : originalList) {
+                if (message.getContent() != null && message.getContent().toLowerCase().contains(filterPattern)) {
+                    filteredList.add(message);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     @Override
     public int getItemViewType(int position) {
-        Message message = messageList.get(position);
+        Message message = filteredList.get(position);
         if (currentUserId != null && currentUserId.equals(message.getSenderId())) {
             return VIEW_TYPE_SENT;
         } else {
@@ -58,9 +95,33 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
-        Message message = messageList.get(position);
+        Message message = filteredList.get(position);
+        String content = message.getContent() != null ? message.getContent() : "";
 
-        holder.tvMessage.setText(message.getContent());
+        // Manejo de mensajes de imagen ([IMAGE]:https://...)
+        if (content.startsWith("[IMAGE]:")) {
+            String imageUrl = content.substring(8);
+            if (holder.ivMessageImage != null) {
+                holder.ivMessageImage.setVisibility(View.VISIBLE);
+                Glide.with(context)
+                        .load(imageUrl)
+                        .placeholder(R.mipmap.ic_launcher)
+                        .into(holder.ivMessageImage);
+
+                holder.ivMessageImage.setOnClickListener(v -> {
+                    if (imageClickListener != null) {
+                        imageClickListener.onImageClick(imageUrl);
+                    }
+                });
+            }
+            holder.tvMessage.setVisibility(View.GONE);
+        } else {
+            if (holder.ivMessageImage != null) {
+                holder.ivMessageImage.setVisibility(View.GONE);
+            }
+            holder.tvMessage.setVisibility(View.VISIBLE);
+            holder.tvMessage.setText(content);
+        }
 
         String rawTime = message.getCreatedAt();
         if (rawTime != null && rawTime.contains("T")) {
@@ -103,18 +164,28 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                     break;
             }
         }
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (longClickListener != null) {
+                longClickListener.onMessageLongClick(message);
+                return true;
+            }
+            return false;
+        });
     }
 
     @Override
     public int getItemCount() {
-        return messageList.size();
+        return filteredList.size();
     }
 
     static class MessageViewHolder extends RecyclerView.ViewHolder {
+        ImageView ivMessageImage;
         TextView tvMessage, tvTime, tvStatus;
 
         public MessageViewHolder(@NonNull View itemView) {
             super(itemView);
+            ivMessageImage = itemView.findViewById(R.id.ivMessageImage);
             tvMessage = itemView.findViewById(R.id.tvMessage);
             tvTime = itemView.findViewById(R.id.tvTime);
             tvStatus = itemView.findViewById(R.id.tvStatus);

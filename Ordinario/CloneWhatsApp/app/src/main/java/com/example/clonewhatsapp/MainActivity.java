@@ -1,6 +1,9 @@
 package com.example.clonewhatsapp;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +15,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +37,15 @@ public class MainActivity extends AppCompatActivity implements ConversationAdapt
     private ConversationAdapter conversationAdapter;
     private final List<Conversation> conversationList = new ArrayList<>();
     private String currentUserId;
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            isGranted -> {
+                if (isGranted) {
+                    authManager.fetchAndSaveFcmToken(null);
+                }
+            }
+    );
 
     private final ActivityResultLauncher<Intent> contactsLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -63,6 +76,20 @@ public class MainActivity extends AppCompatActivity implements ConversationAdapt
 
         setContentView(R.layout.activity_main);
 
+        View root = findViewById(android.R.id.content);
+        if (root != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+                androidx.core.graphics.Insets statusBarInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars());
+                v.setPadding(0, statusBarInsets.top, 0, 0);
+                return insets;
+            });
+        }
+
+        // Crear Canal de Notificaciones FCM y solicitar permisos en Android 13+
+        MyFirebaseMessagingService.createNotificationChannel(this);
+        requestNotificationPermission();
+        authManager.fetchAndSaveFcmToken(null);
+
         currentUserId = authManager.getUserId();
 
         ivUserAvatar = findViewById(R.id.ivUserAvatar);
@@ -71,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements ConversationAdapt
 
         Button btnMyProfile = findViewById(R.id.btnMyProfile);
         Button btnOpenContacts = findViewById(R.id.btnOpenContacts);
+        Button btnCreateGroup = findViewById(R.id.btnCreateGroup);
         Button btnSignOut = findViewById(R.id.btnSignOut);
 
         cardSelectedRecipient = findViewById(R.id.cardSelectedRecipient);
@@ -93,7 +121,17 @@ public class MainActivity extends AppCompatActivity implements ConversationAdapt
             contactsLauncher.launch(intent);
         });
 
+        btnCreateGroup.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, CreateGroupActivity.class)));
+
         btnSignOut.setOnClickListener(v -> performSignOut());
+    }
+
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
     }
 
     @Override

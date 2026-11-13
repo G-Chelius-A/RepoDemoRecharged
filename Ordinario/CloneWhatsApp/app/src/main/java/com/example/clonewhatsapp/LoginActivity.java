@@ -7,6 +7,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -73,6 +74,76 @@ public class LoginActivity extends AppCompatActivity {
         tvForgotPassword.setOnClickListener(v -> {
             showResetPasswordDialog();
         });
+
+        handleDeepLink(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(@NonNull Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleDeepLink(intent);
+    }
+
+    private void handleDeepLink(Intent intent) {
+        if (intent != null && intent.getData() != null) {
+            android.net.Uri uri = intent.getData();
+            String host = uri.getHost();
+
+            if ("reset-password".equals(host)) {
+                String accessToken = extractAccessToken(uri);
+                showUpdatePasswordDialog(accessToken);
+            } else if ("auth-callback".equals(host)) {
+                Toast.makeText(this, "¡Correo verificado exitosamente! Ya puedes iniciar sesión.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private String extractAccessToken(android.net.Uri uri) {
+        if (uri == null) return null;
+        String token = uri.getQueryParameter("access_token");
+        if (token != null && !token.isEmpty()) return token;
+
+        String fragment = uri.getFragment();
+        if (fragment != null && fragment.contains("access_token=")) {
+            for (String param : fragment.split("&")) {
+                if (param.startsWith("access_token=")) {
+                    return param.substring("access_token=".length());
+                }
+            }
+        }
+        return null;
+    }
+
+    private void showUpdatePasswordDialog(String accessToken) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Establecer nueva contraseña");
+
+        final EditText input = new EditText(this);
+        input.setHint("Nueva contraseña");
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        builder.setView(input);
+
+        builder.setPositiveButton("Actualizar", (dialog, which) -> {
+            String newPassword = input.getText().toString().trim();
+            if (newPassword.length() >= 6) {
+                authManager.updateUserPassword(newPassword, accessToken, new SupabaseAuthManager.AuthCallback() {
+                    @Override
+                    public void onSuccess(String message) {
+                        runOnUiThread(() -> Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show());
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        runOnUiThread(() -> Toast.makeText(LoginActivity.this, error, Toast.LENGTH_LONG).show());
+                    }
+                });
+            } else {
+                Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
+        builder.show();
     }
 
     private void showResetPasswordDialog() {

@@ -15,9 +15,9 @@
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:scaleType="centerCrop"
-        android:src="@mipmap/ic_launcher_round"
+        android:src="@drawable/ic_default_avatar"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
-        app:strokeColor="?attr/colorOutline"
+        app:strokeColor="#E0E0E0"
         app:strokeWidth="1dp"
         android:layout_marginEnd="16dp" />
 
@@ -34,7 +34,7 @@
             android:text="Nombre del Usuario"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="#111B21" />
 
         <TextView
             android:id="@+id/tvUsername"
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:text="\@username"
             android:textSize="14sp"
-            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textColor="@color/whatsapp_gray_text"
             android:layout_marginTop="2dp" />
 
     </LinearLayout>

@@ -42,6 +42,15 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        View root = findViewById(android.R.id.content);
+        if (root != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+                androidx.core.graphics.Insets statusBarInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars());
+                v.setPadding(0, statusBarInsets.top, 0, 0);
+                return insets;
+            });
+        }
+
         authManager = new SupabaseAuthManager(this);
         currentUserId = authManager.getUserId();
 

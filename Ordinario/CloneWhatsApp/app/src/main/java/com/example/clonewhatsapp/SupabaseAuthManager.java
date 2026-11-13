@@ -2,10 +2,14 @@ package com.example.clonewhatsapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -37,6 +41,8 @@ public class SupabaseAuthManager {
     private static final String KEY_ACCESS_TOKEN = "access_token";
     private static final String KEY_USER_EMAIL = "user_email";
     private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_FCM_TOKEN = "fcm_token";
+    private static final String BUCKET_NAME = "CloneWhatsApp";
 
     private final OkHttpClient client;
     private final Gson gson;
@@ -77,6 +83,11 @@ public class SupabaseAuthManager {
         void onError(String error);
     }
 
+    public interface ConversationDetailsCallback {
+        void onSuccess(String convoName, boolean isGroup, String createdAt, List<User> members);
+        void onError(String error);
+    }
+
     public interface SendMessageCallback {
         void onSuccess(Message message);
         void onError(String error);
@@ -114,6 +125,16 @@ public class SupabaseAuthManager {
         return prefs.getString(KEY_USER_EMAIL, null);
     }
 
+    public String getFcmToken() {
+        return prefs.getString(KEY_FCM_TOKEN, null);
+    }
+
+    public void saveFcmToken(String token) {
+        if (token != null) {
+            prefs.edit().putString(KEY_FCM_TOKEN, token).apply();
+        }
+    }
+
     public boolean isSessionActive() {
         return getAccessToken() != null;
     }
@@ -131,16 +152,142 @@ public class SupabaseAuthManager {
     }
 
     public void clearSession() {
-        prefs.edit()
-                .remove(KEY_ACCESS_TOKEN)
-                .remove(KEY_USER_EMAIL)
-                .remove(KEY_USER_ID)
-                .apply();
+        prefs.edit().clear().apply();
+    }
+
+    public static byte[] compressImageUri(Context context, Uri uri) throws IOException {
+        InputStream inputStream = context.getContentResolver().openInputStream(uri);
+        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+        if (inputStream != null) inputStream.close();
+
+        if (bitmap == null) {
+            throw new IOException("No se pudo decodificar la imagen.");
+        }
+
+        int maxDimension = 1200;
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        if (width > maxDimension || height > maxDimension) {
+            float ratio = Math.min((float) maxDimension / width, (float) maxDimension / height);
+            width = Math.round(ratio * width);
+            height = Math.round(ratio * height);
+            bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+        return baos.toByteArray();
+    }
+
+    // Obtener FCM Token de Firebase Cloud Messaging y registrarlo en Supabase
+    public void fetchAndSaveFcmToken(AuthCallback callback) {
+        try {
+            FirebaseMessaging.getInstance().getToken()
+                    .addOnCompleteListener(task -> {
+                        if (!task.isSuccessful()) {
+                            if (callback != null) callback.onError("Error al obtener token FCM: " + task.getException());
+                            return;
+                        }
+
+                        String token = task.getResult();
+                        saveFcmToken(token);
+
+                        String userId = getUserId();
+                        if (userId != null && token != null) {
+                            registerDeviceTokenInSupabase(userId, token, callback);
+                        } else if (callback != null) {
+                            callback.onSuccess(token);
+                        }
+                    });
+        } catch (Exception e) {
+            if (callback != null) callback.onError("Error de Firebase: " + e.getMessage());
+        }
+    }
+
+    // Registrar el dispositivo y vincularlo al perfil en public.devices y public.devices_profiles
+    public void registerDeviceTokenInSupabase(String userId, String fcmToken, AuthCallback callback) {
+        String token = getAccessToken();
+        if (token == null || userId == null) {
+            if (callback != null) callback.onError("Sin sesión activa para guardar dispositivo.");
+            return;
+        }
+
+        String deviceName = Build.MANUFACTURER + " " + Build.MODEL;
+
+        String urlDevice = supabaseUrl + "/rest/v1/devices";
+        JsonObject jsonDevice = new JsonObject();
+        jsonDevice.addProperty("device_name", deviceName + " (" + fcmToken.substring(0, Math.min(10, fcmToken.length())) + ")");
+        jsonDevice.addProperty("last_connection", "now()");
+
+        RequestBody bodyDevice = RequestBody.create(jsonDevice.toString(), MediaType.parse("application/json; charset=utf-8"));
+        Request reqDevice = new Request.Builder()
+                .url(urlDevice)
+                .addHeader("apikey", supabaseKey)
+                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=representation")
+                .post(bodyDevice)
+                .build();
+
+        client.newCall(reqDevice).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                if (callback != null) callback.onError("Error de red al registrar dispositivo: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String responseBody = response.body() != null ? response.body().string() : "";
+                if (response.isSuccessful()) {
+                    try {
+                        JsonArray createdArr = gson.fromJson(responseBody, JsonArray.class);
+                        if (createdArr != null && !createdArr.isEmpty()) {
+                            long deviceId = createdArr.get(0).getAsJsonObject().get("id").getAsLong();
+
+                            String urlDevProf = supabaseUrl + "/rest/v1/devices_profiles";
+                            JsonObject jsonDevProf = new JsonObject();
+                            jsonDevProf.addProperty("profile_id", userId);
+                            jsonDevProf.addProperty("device_id", deviceId);
+
+                            RequestBody bodyDevProf = RequestBody.create(jsonDevProf.toString(), MediaType.parse("application/json; charset=utf-8"));
+                            Request reqDevProf = new Request.Builder()
+                                    .url(urlDevProf)
+                                    .addHeader("apikey", supabaseKey)
+                                    .addHeader("Authorization", "Bearer " + token)
+                                    .addHeader("Content-Type", "application/json")
+                                    .addHeader("Prefer", "resolution=merge-duplicates,return=representation")
+                                    .post(bodyDevProf)
+                                    .build();
+
+                            client.newCall(reqDevProf).enqueue(new Callback() {
+                                @Override
+                                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                    if (callback != null) callback.onError("Error al vincular dispositivo con perfil: " + e.getMessage());
+                                }
+
+                                @Override
+                                public void onResponse(@NonNull Call call, @NonNull Response response2) throws IOException {
+                                    if (response2.isSuccessful()) {
+                                        if (callback != null) callback.onSuccess("Dispositivo y FCM token registrados en Supabase.");
+                                    } else {
+                                        if (callback != null) callback.onSuccess("Dispositivo creado exitosamente.");
+                                    }
+                                }
+                            });
+                        }
+                    } catch (Exception e) {
+                        if (callback != null) callback.onSuccess("FCM Token guardado localmente.");
+                    }
+                } else {
+                    if (callback != null) callback.onSuccess("FCM Token guardado localmente.");
+                }
+            }
+        });
     }
 
     // 1. Registro con correo, contraseña, username y full_name
     public void signUp(String email, String password, String username, String fullName, AuthCallback callback) {
-        String url = supabaseUrl + "/auth/v1/signup";
+        String url = supabaseUrl + "/auth/v1/signup?redirect_to=clonewhatsapp://auth-callback";
 
         JsonObject jsonBody = new JsonObject();
         jsonBody.addProperty("email", email);
@@ -151,6 +298,7 @@ public class SupabaseAuthManager {
         dataObject.addProperty("full_name", fullName);
 
         JsonObject optionsObject = new JsonObject();
+        optionsObject.addProperty("emailRedirectTo", "clonewhatsapp://auth-callback");
         optionsObject.add("data", dataObject);
 
         jsonBody.add("options", optionsObject);
@@ -190,6 +338,7 @@ public class SupabaseAuthManager {
                         if (jsonResponse.has("access_token")) {
                             accessToken = jsonResponse.get("access_token").getAsString();
                             saveSession(accessToken, email, userId);
+                            fetchAndSaveFcmToken(null);
                         }
 
                         if (userId != null && accessToken != null) {
@@ -252,6 +401,7 @@ public class SupabaseAuthManager {
                                 userId = userObj.get("id").getAsString();
                             }
                             saveSession(accessToken, email, userId);
+                            fetchAndSaveFcmToken(null);
 
                             if (userObj != null && userId != null) {
                                 String username = email.split("@")[0];
@@ -323,7 +473,7 @@ public class SupabaseAuthManager {
 
     // 4. Recuperación de contraseña
     public void resetPassword(String email, AuthCallback callback) {
-        String url = supabaseUrl + "/auth/v1/recover";
+        String url = supabaseUrl + "/auth/v1/recover?redirect_to=clonewhatsapp://reset-password";
 
         JsonObject jsonBody = new JsonObject();
         jsonBody.addProperty("email", email);
@@ -349,6 +499,46 @@ public class SupabaseAuthManager {
                     callback.onSuccess("Correo de recuperación enviado exitosamente.");
                 } else {
                     callback.onError("Error al enviar recuperación: " + responseBody);
+                }
+            }
+        });
+    }
+
+    // Actualizar contraseña de usuario con token de acceso (recovery)
+    public void updateUserPassword(String newPassword, String accessToken, AuthCallback callback) {
+        String tokenToUse = accessToken != null ? accessToken : getAccessToken();
+        if (tokenToUse == null) {
+            callback.onError("No se encontró token de acceso válido para actualizar la contraseña.");
+            return;
+        }
+
+        String url = supabaseUrl + "/auth/v1/user";
+
+        JsonObject jsonBody = new JsonObject();
+        jsonBody.addProperty("password", newPassword);
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", supabaseKey)
+                .addHeader("Authorization", "Bearer " + tokenToUse)
+                .addHeader("Content-Type", "application/json")
+                .put(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onError("Error de red: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String responseBody = response.body() != null ? response.body().string() : "";
+                if (response.isSuccessful()) {
+                    callback.onSuccess("Contraseña actualizada exitosamente.");
+                } else {
+                    callback.onError("Error al actualizar contraseña: " + responseBody);
                 }
             }
         });
@@ -462,6 +652,7 @@ public class SupabaseAuthManager {
                             String email = userObj.has("email") ? userObj.get("email").getAsString() : getUserEmail();
                             saveSession(token, email, userId);
                             updateLastLogin(userId);
+                            fetchAndSaveFcmToken(null);
                         }
                     } catch (Exception ignored) {}
                     callback.onSuccess("Sesión JWT activa y válida.");
@@ -569,7 +760,7 @@ public class SupabaseAuthManager {
         });
     }
 
-    // 8. Sube una imagen en bytes a Supabase Storage
+    // 8. Sube una imagen en bytes a Supabase Storage (Bucket: CloneWhatsApp)
     public void uploadAndSaveProfileImage(String userId, byte[] imageBytes, String mimeType, UserImageCallback callback) {
         String token = getAccessToken();
         if (token == null) {
@@ -577,16 +768,18 @@ public class SupabaseAuthManager {
             return;
         }
 
-        String extension = mimeType != null && mimeType.contains("png") ? ".png" : ".jpg";
-        String fileName = userId + extension;
+        String contentType = (mimeType != null && !mimeType.trim().isEmpty()) ? mimeType : "image/jpeg";
+        String extension = contentType.contains("png") ? ".png" : ".jpg";
+        String fileName = "pfp_" + userId + extension;
 
-        String storageUrl = supabaseUrl + "/storage/v1/object/user/pfp/" + fileName;
+        String storageUrl = supabaseUrl + "/storage/v1/object/" + BUCKET_NAME + "/" + fileName;
 
-        RequestBody body = RequestBody.create(imageBytes, MediaType.parse(mimeType != null ? mimeType : "image/jpeg"));
+        RequestBody body = RequestBody.create(imageBytes, MediaType.parse(contentType));
         Request request = new Request.Builder()
                 .url(storageUrl)
                 .addHeader("apikey", supabaseKey)
                 .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Content-Type", contentType)
                 .addHeader("x-upsert", "true")
                 .post(body)
                 .build();
@@ -601,7 +794,7 @@ public class SupabaseAuthManager {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 String responseBody = response.body() != null ? response.body().string() : "";
                 if (response.isSuccessful()) {
-                    String publicUrl = supabaseUrl + "/storage/v1/object/public/user/pfp/" + fileName;
+                    String publicUrl = supabaseUrl + "/storage/v1/object/public/" + BUCKET_NAME + "/" + fileName;
 
                     saveOrUpdateUserImage(userId, publicUrl, new AuthCallback() {
                         @Override
@@ -615,23 +808,23 @@ public class SupabaseAuthManager {
                         }
                     });
                 } else {
-                    callback.onError("Error (" + response.code() + ") al subir a Storage: " + responseBody);
+                    if (responseBody.contains("row-level security") || responseBody.contains("security policy")) {
+                        callback.onError("Error RLS (400): Falta la política RLS en Supabase Storage para el bucket '" + BUCKET_NAME + "'. Ejecuta las políticas SQL en el SQL Editor.");
+                    } else if (responseBody.contains("Bucket not found")) {
+                        callback.onError("Error Storage: El bucket '" + BUCKET_NAME + "' no existe en Supabase.");
+                    } else {
+                        callback.onError("Error (" + response.code() + ") al subir a Storage: " + responseBody);
+                    }
                 }
             }
         });
     }
 
-    // 9. Sobrecarga para subir la imagen directamente desde un Uri de Android
+    // 9. Sobrecarga para subir la imagen directamente desde un Uri de Android con compresión
     public void uploadAndSaveProfileImage(Context context, String userId, Uri imageUri, UserImageCallback callback) {
         try {
-            InputStream inputStream = context.getContentResolver().openInputStream(imageUri);
-            if (inputStream == null) {
-                callback.onError("No se pudo abrir el archivo de imagen.");
-                return;
-            }
-            byte[] bytes = getBytesFromInputStream(inputStream);
-            String mimeType = context.getContentResolver().getType(imageUri);
-            uploadAndSaveProfileImage(userId, bytes, mimeType, callback);
+            byte[] bytes = compressImageUri(context, imageUri);
+            uploadAndSaveProfileImage(userId, bytes, "image/jpeg", callback);
         } catch (Exception e) {
             callback.onError("Error al procesar el archivo: " + e.getMessage());
         }
@@ -1168,6 +1361,105 @@ public class SupabaseAuthManager {
         }
     }
 
+    // Consultar detalles y miembros de una conversación
+    public void getConversationDetails(long convoId, ConversationDetailsCallback callback) {
+        String token = getAccessToken();
+        if (token == null) {
+            callback.onError("No hay sesión activa.");
+            return;
+        }
+
+        String urlConvo = supabaseUrl + "/rest/v1/conversaciones?id=eq." + convoId + "&select=convo_name,is_group,created_at";
+        Request reqConvo = new Request.Builder()
+                .url(urlConvo)
+                .addHeader("apikey", supabaseKey)
+                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Accept", "application/json")
+                .get()
+                .build();
+
+        client.newCall(reqConvo).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onError("Error de red al consultar conversación: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String body = response.body() != null ? response.body().string() : "";
+                if (response.isSuccessful()) {
+                    try {
+                        JsonArray arr = gson.fromJson(body, JsonArray.class);
+                        if (arr != null && !arr.isEmpty()) {
+                            JsonObject obj = arr.get(0).getAsJsonObject();
+                            String convoName = obj.has("convo_name") && !obj.get("convo_name").isJsonNull() ? obj.get("convo_name").getAsString() : "Chat";
+                            boolean isGroup = obj.has("is_group") && !obj.get("is_group").isJsonNull() && obj.get("is_group").getAsBoolean();
+                            String createdAt = obj.has("created_at") && !obj.get("created_at").isJsonNull() ? obj.get("created_at").getAsString() : "";
+
+                            String urlMembers = supabaseUrl + "/rest/v1/conversaciones_members?convo_id=eq." + convoId + "&select=profile_id,profiles(id,username,full_name,user_img(img_url))";
+                            Request reqMembers = new Request.Builder()
+                                    .url(urlMembers)
+                                    .addHeader("apikey", supabaseKey)
+                                    .addHeader("Authorization", "Bearer " + token)
+                                    .addHeader("Accept", "application/json")
+                                    .get()
+                                    .build();
+
+                            client.newCall(reqMembers).enqueue(new Callback() {
+                                @Override
+                                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                    callback.onSuccess(convoName, isGroup, createdAt, new ArrayList<>());
+                                }
+
+                                @Override
+                                public void onResponse(@NonNull Call call, @NonNull Response resMembers) throws IOException {
+                                    String bodyM = resMembers.body() != null ? resMembers.body().string() : "";
+                                    List<User> memberList = new ArrayList<>();
+                                    if (resMembers.isSuccessful()) {
+                                        try {
+                                            JsonArray mArr = gson.fromJson(bodyM, JsonArray.class);
+                                            if (mArr != null) {
+                                                for (JsonElement elem : mArr) {
+                                                    JsonObject mObj = elem.getAsJsonObject();
+                                                    if (mObj.has("profiles") && !mObj.get("profiles").isJsonNull()) {
+                                                        JsonObject pObj = mObj.getAsJsonObject("profiles");
+                                                        String uId = pObj.has("id") ? pObj.get("id").getAsString() : "";
+                                                        String uName = pObj.has("username") && !pObj.get("username").isJsonNull() ? pObj.get("username").getAsString() : "";
+                                                        String fName = pObj.has("full_name") && !pObj.get("full_name").isJsonNull() ? pObj.get("full_name").getAsString() : "";
+
+                                                        String img = null;
+                                                        if (pObj.has("user_img") && !pObj.get("user_img").isJsonNull()) {
+                                                            JsonElement imgElem = pObj.get("user_img");
+                                                            if (imgElem.isJsonArray() && imgElem.getAsJsonArray().size() > 0) {
+                                                                JsonObject fImg = imgElem.getAsJsonArray().get(0).getAsJsonObject();
+                                                                if (fImg.has("img_url") && !fImg.get("img_url").isJsonNull()) img = fImg.get("img_url").getAsString();
+                                                            } else if (imgElem.isJsonObject()) {
+                                                                JsonObject fObj = imgElem.getAsJsonObject();
+                                                                if (fObj.has("img_url") && !fObj.get("img_url").isJsonNull()) img = fObj.get("img_url").getAsString();
+                                                            }
+                                                        }
+                                                        memberList.add(new User(uId, uName, fName, img));
+                                                    }
+                                                }
+                                            }
+                                        } catch (Exception ignored) {}
+                                    }
+                                    callback.onSuccess(convoName, isGroup, createdAt, memberList);
+                                }
+                            });
+                        } else {
+                            callback.onError("Conversación no encontrada.");
+                        }
+                    } catch (Exception e) {
+                        callback.onError("Error al parsear información del chat: " + e.getMessage());
+                    }
+                } else {
+                    callback.onError("Error (" + response.code() + ") al consultar información del chat.");
+                }
+            }
+        });
+    }
+
     // 14. Enviar un mensaje a una conversación
     public void sendMessage(long convoId, String senderUserId, String content, SendMessageCallback callback) {
         String token = getAccessToken();
@@ -1612,6 +1904,189 @@ public class SupabaseAuthManager {
         }
     }
 
+    // 19. Subir una imagen de chat a Supabase Storage con compresión (Bucket: CloneWhatsApp)
+    public void uploadChatImage(Context context, Uri imageUri, UserImageCallback callback) {
+        try {
+            byte[] bytes = compressImageUri(context, imageUri);
+            uploadChatImage(bytes, "image/jpeg", callback);
+        } catch (Exception e) {
+            callback.onError("Error al procesar la imagen de chat: " + e.getMessage());
+        }
+    }
+
+    public void uploadChatImage(byte[] imageBytes, String mimeType, UserImageCallback callback) {
+        String token = getAccessToken();
+        if (token == null) {
+            callback.onError("No hay sesión activa.");
+            return;
+        }
+
+        String contentType = (mimeType != null && !mimeType.trim().isEmpty()) ? mimeType : "image/jpeg";
+        String extension = contentType.contains("png") ? ".png" : ".jpg";
+        String fileName = "chat_" + System.currentTimeMillis() + extension;
+
+        String storageUrl = supabaseUrl + "/storage/v1/object/" + BUCKET_NAME + "/" + fileName;
+
+        RequestBody body = RequestBody.create(imageBytes, MediaType.parse(contentType));
+        Request request = new Request.Builder()
+                .url(storageUrl)
+                .addHeader("apikey", supabaseKey)
+                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Content-Type", contentType)
+                .addHeader("x-upsert", "true")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onError("Error de red al subir imagen de chat: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String responseBody = response.body() != null ? response.body().string() : "";
+                if (response.isSuccessful()) {
+                    String publicUrl = supabaseUrl + "/storage/v1/object/public/" + BUCKET_NAME + "/" + fileName;
+                    callback.onSuccess(publicUrl);
+                } else {
+                    if (responseBody.contains("row-level security") || responseBody.contains("security policy")) {
+                        callback.onError("Error RLS (400): Falta la política RLS en Supabase Storage para el bucket '" + BUCKET_NAME + "'. Ejecuta las políticas SQL en el SQL Editor.");
+                    } else if (responseBody.contains("Bucket not found")) {
+                        callback.onError("Error Storage: El bucket '" + BUCKET_NAME + "' no existe en Supabase.");
+                    } else {
+                        callback.onError("Error (" + response.code() + ") al subir imagen: " + responseBody);
+                    }
+                }
+            }
+        });
+    }
+
+    // 20. Crear una conversación grupal
+    public void createGroupConversation(String groupName, List<String> memberUserIds, GetOrCreateConversationCallback callback) {
+        String token = getAccessToken();
+        if (token == null) {
+            callback.onError("No hay sesión activa.");
+            return;
+        }
+
+        String urlConvo = supabaseUrl + "/rest/v1/conversaciones";
+        JsonObject jsonBody = new JsonObject();
+        jsonBody.addProperty("convo_name", groupName);
+        jsonBody.addProperty("is_group", true);
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(urlConvo)
+                .addHeader("apikey", supabaseKey)
+                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=representation")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onError("Error de red al crear grupo: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String responseBody = response.body() != null ? response.body().string() : "";
+                if (response.isSuccessful()) {
+                    try {
+                        JsonArray createdArray = gson.fromJson(responseBody, JsonArray.class);
+                        if (createdArray != null && !createdArray.isEmpty()) {
+                            long convoId = createdArray.get(0).getAsJsonObject().get("id").getAsLong();
+
+                            String urlMembers = supabaseUrl + "/rest/v1/conversaciones_members";
+                            JsonArray membersJson = new JsonArray();
+
+                            for (String uId : memberUserIds) {
+                                JsonObject m = new JsonObject();
+                                m.addProperty("profile_id", uId);
+                                m.addProperty("convo_id", convoId);
+                                membersJson.add(m);
+                            }
+
+                            RequestBody bodyMembers = RequestBody.create(membersJson.toString(), MediaType.parse("application/json; charset=utf-8"));
+                            Request requestMembers = new Request.Builder()
+                                    .url(urlMembers)
+                                    .addHeader("apikey", supabaseKey)
+                                    .addHeader("Authorization", "Bearer " + token)
+                                    .addHeader("Content-Type", "application/json")
+                                    .addHeader("Prefer", "return=representation")
+                                    .post(bodyMembers)
+                                    .build();
+
+                            client.newCall(requestMembers).enqueue(new Callback() {
+                                @Override
+                                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                                    callback.onError("Error al registrar miembros del grupo: " + e.getMessage());
+                                }
+
+                                @Override
+                                public void onResponse(@NonNull Call call, @NonNull Response resMembers) throws IOException {
+                                    if (resMembers.isSuccessful()) {
+                                        callback.onSuccess(convoId);
+                                    } else {
+                                        callback.onError("Error al agregar miembros al grupo.");
+                                    }
+                                }
+                            });
+                        }
+                    } catch (Exception e) {
+                        callback.onError("Error al procesar grupo: " + e.getMessage());
+                    }
+                } else {
+                    callback.onError("Error (" + response.code() + ") al crear grupo: " + responseBody);
+                }
+            }
+        });
+    }
+
+    // 21. Editar un mensaje existente
+    public void editMessage(long messageId, String newContent, AuthCallback callback) {
+        String token = getAccessToken();
+        if (token == null) return;
+
+        String url = supabaseUrl + "/rest/v1/messages?id=eq." + messageId;
+        JsonObject jsonBody = new JsonObject();
+        jsonBody.addProperty("message", newContent);
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", supabaseKey)
+                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=minimal")
+                .patch(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                if (callback != null) callback.onError("Error de red al editar mensaje: " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    if (callback != null) callback.onSuccess("Mensaje editado correctamente.");
+                } else if (callback != null) {
+                    callback.onError("Error al editar mensaje.");
+                }
+            }
+        });
+    }
+
+    // 22. Eliminar un mensaje
+    public void deleteMessage(long messageId, AuthCallback callback) {
+        editMessage(messageId, "🚫 Este mensaje fue eliminado", callback);
+    }
+
     public void unsubscribeRealtimeMessages() {
         if (heartbeatExecutor != null && !heartbeatExecutor.isShutdown()) {
             heartbeatExecutor.shutdown();
@@ -1621,15 +2096,5 @@ public class SupabaseAuthManager {
             realtimeWebSocket.close(1000, "Unsubscribing");
             realtimeWebSocket = null;
         }
-    }
-
-    private byte[] getBytesFromInputStream(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-        return byteBuffer.toByteArray();
     }
 }
