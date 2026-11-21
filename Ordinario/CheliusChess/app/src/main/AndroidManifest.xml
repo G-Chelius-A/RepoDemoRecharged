@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permiso de Internet para Supabase Auth, Postgrest y Realtime WebSockets -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.CheliusChess">
+
+        <!-- Actividad Principal (Menú de Inicio) -->
+        <activity
+            android:name=".MenuActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Supabase Multijugador: Autenticación Login / Registro -->
+        <activity
+            android:name=".AuthActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="cheliuschess"
+                    android:host="auth-callback" />
+            </intent-filter>
+        </activity>
+
+        <!-- Supabase Multijugador: Sala de Espera / Lobby -->
+        <activity
+            android:name=".LobbyActivity"
+            android:exported="false" />
+
+        <!-- Supabase Multijugador: Partida en Vivo en Tiempo Real -->
+        <activity
+            android:name=".OnlineGameActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Selección de Tiempo -->
+        <activity
+            android:name=".TimeConfigActivity"
+            android:exported="false" />
+
+        <!-- Tablero de Juego en Partida (Offline / vs IA) -->
+        <activity
+            android:name=".GameActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Compatibilidad -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+    </application>
+
+</manifest>

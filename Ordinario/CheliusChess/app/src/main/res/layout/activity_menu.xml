@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_menu_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="#1C1C1E"
+    tools:context=".MenuActivity">
+
+    <!-- Header Logo & Title -->
+    <ImageView
+        android:id="@+id/img_app_logo"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:src="@drawable/ic_chelius_logo"
+        android:contentDescription="Chelius Chess Logo"
+        android:scaleType="fitCenter"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CHELIUS CHESS"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:letterSpacing="0.05"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ajedrez Multijugador, VS Computadora y 2 Jugadores"
+        android:textSize="13sp"
+        android:textColor="#8E8E93"
+        android:layout_marginBottom="28dp" />
+
+    <!-- Action Buttons Cards -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_play_online"
+        style="@style/Widget.Material3.Button.Icon"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:text="🌐   MULTIJUGADOR EN LÍNEA (SUPABASE)"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:cornerRadius="16dp"
+        app:backgroundTint="#FF9500"
+        android:layout_marginBottom="12dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_play_vs_computer"
+        style="@style/Widget.Material3.Button.Icon"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:text="🤖   JUGAR VS COMPUTADORA (IA)"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:cornerRadius="16dp"
+        app:backgroundTint="#34C759"
+        android:layout_marginBottom="12dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_play_offline"
+        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:text="🎮   2 JUGADORES (MISMO DISPOSITIVO)"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        app:strokeColor="#007AFF"
+        app:strokeWidth="2dp"
+        app:cornerRadius="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_about"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:text="ℹ️   Acerca de y Reglas"
+        android:textSize="14sp"
+        android:textColor="#8E8E93" />
+
+</LinearLayout>

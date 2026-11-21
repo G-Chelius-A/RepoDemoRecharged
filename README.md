@@ -41,6 +41,7 @@ Repositorio oficial del curso de Implementación de Aplicaciones Móviles
 | 11 | SensoresNav | Uso de sensores en Android Studio | 29/oct/26 | 
 | 12 | CloneWhatsApp | Clon de WhatsApp con Supabase y JWT | 3/nov/26 - 12/nov/26 |
 | 13 | CustomPassEmailRecovery | Recuperar contraseñas con SupaBase | 10/nov/26 |
+| 14 | CheliusChess | App libre de Ajedrez | 19/nov/26 |
 
 
-### 👉 TOTAL: 13 (2 actividad React Native, 11 Android Studio)
+### 👉 TOTAL: 14 (2 actividad React Native, 12 Android Studio)
